@@ -1,6 +1,5 @@
 package io.security.basicsecurity;
 
-import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +27,7 @@ public class SecurityConfig {
                 )
                 .formLogin((login) ->
                         login
-//                                .loginPage("/loginPage")
+                                //.loginPage("/loginPage")
                                 .defaultSuccessUrl("/")
                                 .failureUrl("/login")
                                 .usernameParameter("userId")
