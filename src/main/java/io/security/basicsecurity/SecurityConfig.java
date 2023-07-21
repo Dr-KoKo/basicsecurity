@@ -4,11 +4,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -91,6 +91,13 @@ public class SecurityConfig {
                                 .tokenValiditySeconds(3600)
                                 //.alwaysRemember(true)
                                 .userDetailsService(userDetailsService)
+                )
+                .sessionManagement((session) ->
+                        session
+                                .sessionFixation().changeSessionId()
+                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                                .maximumSessions(1)
+                                .maxSessionsPreventsLogin(false)
                 );
 
         return http.build();
