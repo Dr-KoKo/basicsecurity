@@ -4,8 +4,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,11 +32,22 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("user").password("{noop}123123").roles("USER")
+                .and().withUser("sys").password("{noop}123123").roles("SYS", "USER")
+                .and().withUser("admin").password("{noop}123123").roles("ADMIN", "SYS", "USER");
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
+                                .requestMatchers("/user").hasRole("USER")
+                                .requestMatchers("/admin/pay").hasRole("ADMIN")
+                                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SYS")
                                 .anyRequest().authenticated()
                 )
                 .formLogin((login) ->
