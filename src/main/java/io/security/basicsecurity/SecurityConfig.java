@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -46,6 +47,8 @@ public class SecurityConfig {
                 .withUser("user").password("{noop}123123").roles("USER")
                 .and().withUser("sys").password("{noop}123123").roles("SYS", "USER")
                 .and().withUser("admin").password("{noop}123123").roles("ADMIN", "SYS", "USER");
+
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     @Bean
