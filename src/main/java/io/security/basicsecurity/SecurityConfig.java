@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,6 +32,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
@@ -48,6 +51,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/user/**", "/admin/**")
                 .csrf((csrf) ->
                         csrf
                                 .ignoringRequestMatchers("/kakao/**", "/naver/**", "/google/**")
@@ -143,6 +147,22 @@ public class SecurityConfig {
                                                      }
                                 )
                 );
+
+        return http.build();
+    }
+}
+
+@Configuration
+@Order(0)
+class SecurityConfig2 {
+    @Bean
+    public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((authorizeHttpRequests) ->
+                        authorizeHttpRequests
+                                .anyRequest().permitAll()
+                )
+                .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
